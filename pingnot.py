@@ -9,7 +9,7 @@
 
 
 from win10toast import ToastNotifier
-import os, subprocess
+import subprocess
 pnot = ToastNotifier()
 while True:    
     if subprocess.call("ping ya.ru") != 0:
