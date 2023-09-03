@@ -3,24 +3,29 @@
 # This script works for me, but there is clearly some space for optimization.
 
 param(
-   $VMName,                     # We push 2 params. This one is a name
-   $MemoryStartup = 2GB         # virtual memory allocated
+   $VMName,                                                     # We push 2 params. This one is a name
+   $MemoryStartup = 2GB,                                        # virtual memory allocated
+   $Switch = "Extnet",                                          # Connected switch. Mine is Extnet, but you must put yours.
+   $vmpath = "C:\hyperv\$VMName",                               # Path for vm itself
+   $VirtualDiskPath = "C:\hyperv\vdisks\$VMName.vhdx",          # Path to virdisc. Please specify your own path, for your own's sake. Or clear for default.
+   $VirDiskSize = 15GB,                                         # Disk size. For Ubuntu Server this is my sufficient minimum.
+   $ISOpath = "ubuntu-20.04.6-live-server-amd64.iso"            # Path to ISO file to install OS from.
 )
 
 $VM = @{                                                # Here we manifest a vm.
     Name = $VMName                                      
     MemoryStartupBytes = $MemoryStartup                 # Specifying memory amount at startup. Very important to make this amount sufficient. Or, in case of windows, you will get the 0x7D BugChech code. BTW, it's article in microsoft learn is very funny.
     Generation = 2                                      # There is almost no reason to use the first generation.
-    NewVHDPath = "I:\hyperv\vdisks\$VMName.vhdx"        # Path to virdisc. Please specify your own path, for your own's sake. Or clear for default.
-    NewVHDSizeBytes = 15GB                              # Disk size. For Ubuntu Server this is my sufficient minimum.
+    NewVHDPath = $VirtualDiskPath                       
+    NewVHDSizeBytes = $VirDiskSize                      
     BootDevice = "VHD"                                  # Setting boot device to disk. Here is a space for improvement
-    Path = "I:\hyperv\$VMName"                          # Path for vm itself
-    SwitchName = "Extnet"                               # Connected switch. Mine is Extnet, but you must put yours.
+    Path = $vmpath                                      
+    SwitchName = $switch                                
 }
 
 New-VM @VM                          # Creating vm. Next we will mod the vm itself.
 get-vm $VMName | Set-VMFirmware -EnableSecureBoot Off                           # Turning off the SecureBoot, so vm could boot into something other than Windows
-Add-VMDvdDrive -VMName $VMName -Path "ubuntu-22.04.2-live-server-amd64.iso"     # Creating a dvd drive. I used here ubuntu image. You just put path to your desired image.
+Add-VMDvdDrive -VMName $VMName -Path $ISOpath                                   # Creating a dvd drive. I used here ubuntu image. You just put path to your desired image.
 $dvd = Get-VMDvdDrive -VMName $VMName                                           # Getting it
 $hd = Get-VMHardDiskDrive -VMName $VMName                                       # Getting the hard drive
 get-vm $VMName | Set-VMFirmware -BootOrder $dvd, $hd                            # Putting order for drives.
