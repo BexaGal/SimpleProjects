@@ -10,7 +10,8 @@ param(
    $VirtualDiskPath = "$vmpath\..\vdisks\$VMName.vhdx",         # Path to virdisc. Please specify your own path, for your own's sake. Or clear for default.
    $VirDiskSize = 15GB,                                         # Disk size. For Ubuntu Server this is my sufficient minimum.
    $ISOpath = "ubuntu-20.04.6-live-server-amd64.iso",           # Path to ISO file to install OS from.
-   [switch]$AutoCheckpointDisable                               # This param defines if VM will be created with autosnapshots.
+   [switch]$AutoCheckpointDisable,                              # This param defines if VM will be created with autosnapshots.
+   $CoreCount = 2
 )
 
 $VM = @{                                                # Here we manifest a vm.
@@ -30,7 +31,7 @@ Add-VMDvdDrive -VMName $VMName -Path $ISOpath                                   
 $dvd = Get-VMDvdDrive -VMName $VMName                                           # Getting it
 $hd = Get-VMHardDiskDrive -VMName $VMName                                       # Getting the hard drive
 get-vm $VMName | Set-VMFirmware -BootOrder $dvd, $hd                            # Putting order for drives.
-get-vm $VMName | Set-VMProcessor -Count 2                                       # Setting vm to use 2 cores.
+get-vm $VMName | Set-VMProcessor -Count $CoreCount                                       # Setting vm to use 2 cores.
 if ($AutoCheckpointDisable -eq $true){                                          # Turns off automatic checkpoint creation
     set-vm -Name $VMName -AutomaticCheckpointsEnabled $false
 }
