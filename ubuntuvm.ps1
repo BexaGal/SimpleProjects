@@ -7,9 +7,10 @@ param(
    $MemoryStartup = 2GB,                                        # virtual memory allocated
    $Switch = "Extnet",                                          # Connected switch. Mine is Extnet, but you must put yours.
    $vmpath = "C:\hyperv\$VMName",                               # Path for vm itself
-   $VirtualDiskPath = "$vmpath\..\vdisks\$VMName.vhdx",          # Path to virdisc. Please specify your own path, for your own's sake. Or clear for default.
+   $VirtualDiskPath = "$vmpath\..\vdisks\$VMName.vhdx",         # Path to virdisc. Please specify your own path, for your own's sake. Or clear for default.
    $VirDiskSize = 15GB,                                         # Disk size. For Ubuntu Server this is my sufficient minimum.
-   $ISOpath = "ubuntu-20.04.6-live-server-amd64.iso"            # Path to ISO file to install OS from.
+   $ISOpath = "ubuntu-20.04.6-live-server-amd64.iso",           # Path to ISO file to install OS from.
+   [switch]$AutoCheckpointDisable                               # This param defines if VM will be created with autosnapshots.
 )
 
 $VM = @{                                                # Here we manifest a vm.
@@ -30,4 +31,7 @@ $dvd = Get-VMDvdDrive -VMName $VMName                                           
 $hd = Get-VMHardDiskDrive -VMName $VMName                                       # Getting the hard drive
 get-vm $VMName | Set-VMFirmware -BootOrder $dvd, $hd                            # Putting order for drives.
 get-vm $VMName | Set-VMProcessor -Count 2                                       # Setting vm to use 2 cores.
+if ($AutoCheckpointDisable -eq $true){                                          # Turns off automatic checkpoint creation
+    set-vm -Name $VMName -AutomaticCheckpointsEnabled $false
+}
 Set-VMMemory $VMName -DynamicMemoryEnabled $true -MinimumBytes 64MB -StartupBytes $MemoryStartup -MaximumBytes 2GB -Priority 80 -Buffer 25      # Setting memory params. Modify at your will.
