@@ -7,7 +7,7 @@ param(
    $MemoryStartup = 2GB,                                        # virtual memory allocated
    $Switch = "Extnet",                                          # Connected switch. Mine is Extnet, but you must put yours.
    $vmpath = "C:\hyperv\$VMName",                               # Path for vm itself
-   $VirtualDiskPath = "C:\hyperv\vdisks\$VMName.vhdx",          # Path to virdisc. Please specify your own path, for your own's sake. Or clear for default.
+   $VirtualDiskPath = "$vmpath\..\vdisks\$VMName.vhdx",          # Path to virdisc. Please specify your own path, for your own's sake. Or clear for default.
    $VirDiskSize = 15GB,                                         # Disk size. For Ubuntu Server this is my sufficient minimum.
    $ISOpath = "ubuntu-20.04.6-live-server-amd64.iso"            # Path to ISO file to install OS from.
 )
