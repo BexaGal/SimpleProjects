@@ -35,4 +35,4 @@ get-vm $VMName | Set-VMProcessor -Count $CoreCount                              
 if ($AutoCheckpointDisable -eq $true){                                          # Turns off automatic checkpoint creation
     set-vm -Name $VMName -AutomaticCheckpointsEnabled $false
 }
-Set-VMMemory $VMName -DynamicMemoryEnabled $true -MinimumBytes 64MB -StartupBytes $MemoryStartup -MaximumBytes 2GB -Priority 80 -Buffer 25      # Setting memory params. Modify at your will.
+Set-VMMemory $VMName -DynamicMemoryEnabled $true -MinimumBytes 64MB -StartupBytes $MemoryStartup -MaximumBytes $MemoryStartup -Priority 80 -Buffer 25      # Setting memory params. Modify at your will.
