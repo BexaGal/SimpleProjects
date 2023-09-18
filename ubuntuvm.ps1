@@ -11,7 +11,8 @@ param(
    $VirDiskSize = 15GB,                                         # Disk size. For Ubuntu Server this is my sufficient minimum.
    $ISOpath = "ubuntu-20.04.6-live-server-amd64.iso",           # Path to ISO file to install OS from.
    [switch]$AutoCheckpointDisable,                              # This param defines if VM will be created with autosnapshots.
-   $CoreCount = 2                                               # Setting core amount. 2 by default
+   $CoreCount = 2,                                              # Setting core amount. 2 by default
+   [switch]$NestedVirtualization                                # Switch do define if VM will get nested virtualization options
 )
 
 $VM = @{                                                # Here we manifest a vm.
@@ -34,5 +35,10 @@ get-vm $VMName | Set-VMFirmware -BootOrder $dvd, $hd                            
 get-vm $VMName | Set-VMProcessor -Count $CoreCount                              # Setting vm to use set amount of cores cores.
 if ($AutoCheckpointDisable -eq $true){                                          # Turns off automatic checkpoint creation
     set-vm -Name $VMName -AutomaticCheckpointsEnabled $false
+}
+if ($NestedVirtualization -eq $true){
+    Set-VMProcessor -VMName $VMName -ExposeVirtualizationExtensions $true
+}else {
+    Set-VMProcessor -VMName $VMName -ExposeVirtualizationExtensions $false
 }
 Set-VMMemory $VMName -DynamicMemoryEnabled $true -MinimumBytes 64MB -StartupBytes $MemoryStartup -MaximumBytes $MemoryStartup -Priority 80 -Buffer 25      # Setting memory params. Modify at your will.
