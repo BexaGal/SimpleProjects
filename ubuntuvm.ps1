@@ -12,7 +12,8 @@ param(
    $ISOpath = "ubuntu-20.04.6-live-server-amd64.iso",           # Path to ISO file to install OS from.
    [switch]$AutoCheckpointDisable,                              # This param defines if VM will be created with autosnapshots.
    $CoreCount = 2,                                              # Setting core amount. 2 by default
-   [switch]$NestedVirtualization                                # Switch do define if VM will get nested virtualization options
+   [switch]$NestedVirtualization,                               # Switch do define if VM will get nested virtualization options
+   [switch]$DynamicMemoryOff                                    # Dynamic memory switch
 )
 
 $VM = @{                                                # Here we manifest a vm.
@@ -41,4 +42,8 @@ if ($NestedVirtualization -eq $true){
 }else {
     Set-VMProcessor -VMName $VMName -ExposeVirtualizationExtensions $false
 }
-Set-VMMemory $VMName -DynamicMemoryEnabled $true -MinimumBytes 64MB -StartupBytes $MemoryStartup -MaximumBytes $MemoryStartup -Priority 80 -Buffer 25      # Setting memory params. Modify at your will.
+if ($DynamicMemoryOff -eq $true){                                               # Setting memory params considering dynamic memory switch. Modify at your will.
+    Set-VMMemory $VMName -DynamicMemoryEnabled $false -StartupBytes $MemoryStartup
+}else {
+    Set-VMMemory $VMName -DynamicMemoryEnabled $true -MinimumBytes 64MB -StartupBytes $MemoryStartup -MaximumBytes $MemoryStartup -Priority 80 -Buffer 25 
+}
